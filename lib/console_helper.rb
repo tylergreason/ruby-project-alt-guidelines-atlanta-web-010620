@@ -101,7 +101,8 @@ class Console
         }
         # make flavor associations 
         flavors_list.each {|flavor| 
-            # binding.pry 
+            # check if the flavor and category exist yet, and if not, create them 
+            # also, edit the string entered by the user to use the standard first-letter-capital style used for seed data. 
             new_flavor = Flavor.find_or_create_by(name: flavor.downcase.capitalize)
             new_category = Category.find_or_create_by(dish: new_dish, flavor:new_flavor)
         }
