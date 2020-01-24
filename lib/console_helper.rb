@@ -1,36 +1,38 @@
 
-class Console 
+class Console
+    def initialize 
+        @welcome = true 
+        @@prompt = TTY::Prompt.new(active_color: :black)
+    end
     # class variables 
     # use variable for whether or not to present welcome message when coming back to the main menu 
-    @welcome = true 
     # skip given amount of lines 
-    def self.skip_lines(num=0) 
+    def skip_lines(num=0) 
         num.times do 
             puts " "
             end
     end 
 
     # present dishes to select 
-    def self.select_dish 
+    def select_dish 
         # select a dish to show details about 
-        prompt = TTY::Prompt.new(active_color: :black)
         dishes = Dish.all.map{|dish|dish.name}
         # add an option to exit to the dishes list 
         dishes << 'go back'
-        choice = prompt.select("Choose a dish: ", dishes, cycle: true)
+        choice = @@prompt.select("Choose a dish: ", dishes, cycle: true)
         if choice != 'go back' 
             system 'clear'
             Dish.find_by(name: choice).print_dish
-            self.select_dish
+            select_dish
         else 
-            self.main_menu
+            main_menu
         end 
     end
 
     # select from one or more flavors 
-    def self.select_by_flavors 
-        prompt = TTY::Prompt.new(active_color: :black)
-        selections = prompt.multi_select("Select flavors. Returns a list of all dishes that include those flavors.", Flavor.flavor_names, cycle: true)
+    def select_by_flavors 
+
+        selections = @@prompt.multi_select("Select flavors. Returns a list of all dishes that include those flavors.", Flavor.active_flavor_names, cycle: true)
         # if dish's flavors - selections == 0, then that dish should be included! 
         # iterate through all the dishes 
         dishes_to_return = []
@@ -44,37 +46,33 @@ class Console
             if selections == []
                 system 'clear'
                 puts "Please select at least one flavor"
-                self.select_by_flavors
+                select_by_flavors
             end
         }
         #  print each dish that matches 
         if dishes_to_return.length == 0 
             puts "There are no dishes matching those flavors"
-            if prompt.yes?("Would you like to search again?")
+            if @@prompt.yes?("Would you like to search again?")
                 system 'clear'
-                self.select_by_flavors
+                select_by_flavors
             else
-                self.main_menu
+                main_menu
             end 
         else 
             puts "These dishes match those flavors: "
             dishes_to_return.map{|dish| dish.print_dish}
-            if prompt.yes?("Would you like to search again?")
+            if @@prompt.yes?("Would you like to search again?")
                 system 'clear'
-                self.select_by_flavors
+                select_by_flavors
             else
-                self.main_menu
+                main_menu
             end
-
         end 
-        # binding.pry 
-
     end 
 
-    def self.create_dish 
+    def create_dish 
         system 'clear' 
         puts "Create dish"
-        prompt = TTY::Prompt.new(active_color: :black)
         # make empty hashes for ingredients and flavor lists 
         ingredient_list = {}
         flavors_list = []
@@ -83,9 +81,9 @@ class Console
         puts "How would you describe your dish?"
         dish_description = gets.chomp
         # add ingredients
-        self.add_ingredients(ingredient_list)
+        add_ingredients(ingredient_list)
         # add flavors 
-        self.add_flavors(flavors_list)
+        add_flavors(flavors_list)
 
         # Cooking instructions 
         puts "How do you make your dish?"
@@ -112,92 +110,88 @@ class Console
 
 
         # redo prompts with: is this the dish you'd like to add? y/n/main menu 
-        prompt.select("Is this the dish you would like to add", cycle: true) do |selection| 
+        @@prompt.select("Is this the dish you would like to add", cycle: true) do |selection| 
             selection.choice "Yes!", ->{
                 # binding.pry 
                 system 'clear' 
                 puts "Great! It's been added to the list."
-                self.select_dish
+                select_dish
             } 
             selection.choice "No, let's try again", ->{
                 Dish.last.delete
-                self.create_dish
+                create_dish
             }
-            selection.choice "Main menu", ->{self.main_menu}
+            selection.choice "Main menu", ->{main_menu}
         end 
 
   
     end 
 
-    def self.add_ingredients(ingredients_hash)
+    def add_ingredients(ingredients_hash)
         puts "Ingredients: "
         puts "What is in your dish? Add one ingredient name. "
         ingredient_name = gets.chomp 
         puts "How much #{ingredient_name} is in your dish?"
         ingredient_quantity = gets.chomp 
         ingredients_hash[ingredient_name] = ingredient_quantity
-        prompt = TTY::Prompt.new(active_color: :black)
         # after getting the ingredient name and quanitity and adding them to a hash that holds each ingredient and quantity, ask the user if they want to add another ingredient. If they don't (n,no), the method returns the ingredient hash, if any other key is pressed they're prompted to add another ingredient and quantity pair. 
-        if prompt.yes?("Would you like to add another ingredient?")
-            self.add_ingredients(ingredients_hash) 
+        if @@prompt.yes?("Would you like to add another ingredient?")
+            add_ingredients(ingredients_hash) 
         else 
             return ingredients_hash
         end
     end 
 
-    def self.add_flavors(array) 
-        prompt = TTY::Prompt.new(active_color: :black)
+    def add_flavors(array) 
         puts "Flavors: "
         puts "How would you describe your dish's flavor? One word entries, please." 
         flavor_name = gets.chomp 
         if flavor_name.include?(" ")
             # system 'clear'
             puts "Sorry, no spaces are allowed."
-            self.add_flavors(array)
+            add_flavors(array)
         else 
             array << flavor_name
-            if prompt.yes?("Would you like to add another flavor?")
-                self.add_flavors(array)  
+            if @@prompt.yes?("Would you like to add another flavor?")
+                add_flavors(array)  
             else 
                 array 
             end 
         end 
     end     
 
-    def self.delete_dish 
+    def delete_dish 
         # select a dish to delete
-        prompt = TTY::Prompt.new(active_color: :black)
         puts "Delete dish"
         dishes = Dish.all.map{|dish|dish.name}
         dishes << "go back"
-        choice = prompt.select("Choose a dish to delete: ", dishes, cycle: true)
+        choice = @@prompt.select("Choose a dish to delete: ", dishes, cycle: true)
         if choice != "go back"
             Dish.find_by(name: choice).print_dish
-            if prompt.yes?("Delete this dish?")
+            if @@prompt.yes?("Delete this dish?")
                 system 'clear'
                 puts "Ok, #{choice} was deleted."
                 Dish.find_by(name: choice).destroy
-                self.delete_dish
+                delete_dish
             else 
                 system 'clear'
                 puts "Ok, nevermind"
-                self.delete_dish
+                delete_dish
             end
         else 
-            self.main_menu 
+            main_menu 
         end 
     end 
 
-    def self.weclome_message
-        prompt = TTY::Prompt.new(active_color: :black)  
+    def weclome_message  
         system 'clear' 
         puts "Welcome to Recipes!"
-        self.skip_lines(2)
+        skip_lines(2)
         puts "This application lets you view a list"
         puts "of recipes, and sort those recipes by"
         puts "flavor. You can even delete recipes"
         puts "from this list or add your own!"
-        self.skip_lines(2) 
+        skip_lines(2) 
         puts "This application was written by Tyler"
         puts "Greason for their mod 1 coding challenge"
         puts "for the Flatiron School Software"
@@ -206,30 +200,28 @@ class Console
         puts "understanding of object oriented"
         puts "programming, and interaction with"
         puts "databases, in this case, Active Record."
-        self.skip_lines(1)
+        skip_lines(1)
         puts "You can reach Tyler at tyler.greason at protonmail.com"
     
-        self.skip_lines(1)
-        prompt.keypress("Press any key to continue")
+        skip_lines(1)
+        @@prompt.keypress("Press any key to continue")
         @welcome = false 
         system 'clear'
 
     end 
 
-    def self.main_menu  
+    def main_menu  
         if @welcome 
-            self.weclome_message
+            weclome_message
         end 
-        system 'clear'
-        prompt = TTY::Prompt.new(active_color: :black) 
+        system 'clear' 
         puts 'Welcome to Recipes!'
-        prompt.select("What would you like to do?", cycle: true) do |selection| 
-            selection.choice "View all recipies", ->{self.select_dish} 
-            selection.choice "Search recipies by flavor", ->{self.select_by_flavors}
-            selection.choice "Add recipe", ->{self.create_dish}
-            selection.choice "Delete recipe", ->{self.delete_dish}
+        @@prompt.select("What would you like to do?", cycle: true) do |selection| 
+            selection.choice "View all recipies", ->{select_dish} 
+            selection.choice "Search recipies by flavor", ->{select_by_flavors}
+            selection.choice "Add recipe", ->{create_dish}
+            selection.choice "Delete recipe", ->{delete_dish}
             selection.choice "Exit", ->{exit}
         end 
     end 
-
 end 

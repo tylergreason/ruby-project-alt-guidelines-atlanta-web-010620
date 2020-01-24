@@ -4,12 +4,8 @@ ActiveRecord::Base.logger = nil
 
 # seed_data() 
 system 'clear'
-# Console.select_dish
-# Console.create_dish
-# Console.delete_dish 
-Console.main_menu
+console = Console.new()
 # binding.pry
-
-
+console.main_menu
 
 ActiveRecord::Base.logger = old_logger
