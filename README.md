@@ -65,7 +65,7 @@ After saving the dish it is added to the recipe list:
 
 
 ## Project Status 
-The project is usable and in working order. Suggestions have been made to spruce up the project with ASCII art and a login page, which I am considering for the future. I am also considering restructuring the interface to make the user experience more pleasant. For instance, I am curious if it would be better for the user to pick a recipe from a list, then be presented the option to edit or delete that recipe. If a login feature were to been implemented, then the user could add a recipe they are viewing to their favorite recipes. This would remove the 'delete recipe' option from the main menu and make the application more useable. 
+The project is usable and in working order. Suggestions have been made to spruce up the project with ASCII art and a login page, which I am considering for the future. I am also considering restructuring the interface to make the user experience more pleasant. For instance, I am curious if it would be better for the user to pick a recipe from a list, then be presented the option to edit or delete that recipe. If a login feature were to been implemented, then the user could add a recipe they are viewing to their favorite recipes. This would remove the 'delete recipe' option from the main menu and make the application more usable. 
 
 ## Sources 
 
