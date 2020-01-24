@@ -202,7 +202,6 @@ class Console
         puts "databases, in this case, Active Record."
         skip_lines(1)
         puts "You can reach Tyler at tyler.greason at protonmail.com"
-    
         skip_lines(1)
         @@prompt.keypress("Press any key to continue")
         @welcome = false 

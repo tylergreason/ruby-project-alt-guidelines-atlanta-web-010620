@@ -26,6 +26,16 @@ This simple application was created to demonstrate my knowledge of object orient
 - [ActiveRecord 5.2](https://rubyonrails.org/)
 - [Pry 0.12.2](https://github.com/pry/pry)
 
+## How It Works 
+
+The run.rb file creates an instance of the Console class (found in console_helper.rb). This instance calls its main_menu method. That method gives the user options such as "View all recipes" or "Delete recipe". These menu options are tied to methods that work the same way as main_menu. Each menu was created using TTY::Prompt for ease of production. 
+
+Dishes, ingredients, and flavors are stored in tables, as well as the associations between them. When the user views a dish, that dish's data is retrieved from the Dish table by name and its qualities are displayed. Similarly, when a user selects a dish to delete, that dish is deleted from the Dish table by name. 
+
+When entering flavors for a dish, the flavors the user enters are formatted by the application to be consistent with the flavors already present in the Flavor table. If the flavor the user is trying to add exists in that table (decided by querying for that flavor's name in the table), the flavor is not added, but a new association is made between the already existing flavor and the dish the user is creating. If that flavor is not in the Flavor table, the flavor is created in the table and an association is made between the new flavor and the dish the user is adding. 
+
+When searching for dishes by flavor, if a flavor in the Flavor table does not have any associated dishes, that flavor is not displayed as an option for the user to search by. 
+
 ## Launch
 From the main directory, first install all necessary dependencies: 
 ```ruby 
