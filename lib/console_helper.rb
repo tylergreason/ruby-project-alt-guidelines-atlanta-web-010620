@@ -1,5 +1,5 @@
 
-class Console
+class Console 
     # class variables 
     # use variable for whether or not to present welcome message when coming back to the main menu 
     @welcome = true 
@@ -13,7 +13,7 @@ class Console
     # present dishes to select 
     def self.select_dish 
         # select a dish to show details about 
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         dishes = Dish.all.map{|dish|dish.name}
         # add an option to exit to the dishes list 
         dishes << 'go back'
@@ -29,7 +29,7 @@ class Console
 
     # select from one or more flavors 
     def self.select_by_flavors 
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         selections = prompt.multi_select("Select flavors. Returns a list of all dishes that include those flavors.", Flavor.flavor_names, cycle: true)
         # if dish's flavors - selections == 0, then that dish should be included! 
         # iterate through all the dishes 
@@ -74,7 +74,7 @@ class Console
     def self.create_dish 
         system 'clear' 
         puts "Create dish"
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         # make empty hashes for ingredients and flavor lists 
         ingredient_list = {}
         flavors_list = []
@@ -136,7 +136,7 @@ class Console
         puts "How much #{ingredient_name} is in your dish?"
         ingredient_quantity = gets.chomp 
         ingredients_hash[ingredient_name] = ingredient_quantity
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         # after getting the ingredient name and quanitity and adding them to a hash that holds each ingredient and quantity, ask the user if they want to add another ingredient. If they don't (n,no), the method returns the ingredient hash, if any other key is pressed they're prompted to add another ingredient and quantity pair. 
         if prompt.yes?("Would you like to add another ingredient?")
             self.add_ingredients(ingredients_hash) 
@@ -146,7 +146,7 @@ class Console
     end 
 
     def self.add_flavors(array) 
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         puts "Flavors: "
         puts "How would you describe your dish's flavor? One word entries, please." 
         flavor_name = gets.chomp 
@@ -166,7 +166,7 @@ class Console
 
     def self.delete_dish 
         # select a dish to delete
-        prompt = TTY::Prompt.new
+        prompt = TTY::Prompt.new(active_color: :black)
         puts "Delete dish"
         dishes = Dish.all.map{|dish|dish.name}
         dishes << "go back"
@@ -189,7 +189,7 @@ class Console
     end 
 
     def self.weclome_message
-        prompt = TTY::Prompt.new  
+        prompt = TTY::Prompt.new(active_color: :black)  
         system 'clear' 
         puts "Welcome to Recipes!"
         self.skip_lines(2)
@@ -221,11 +221,11 @@ class Console
             self.weclome_message
         end 
         system 'clear'
-        prompt = TTY::Prompt.new 
+        prompt = TTY::Prompt.new(active_color: :black) 
         puts 'Welcome to Recipes!'
         prompt.select("What would you like to do?", cycle: true) do |selection| 
             selection.choice "View all recipies", ->{self.select_dish} 
-            selection.choice "View recipies by category", ->{self.select_by_flavors}
+            selection.choice "Search recipies by flavor", ->{self.select_by_flavors}
             selection.choice "Add recipe", ->{self.create_dish}
             selection.choice "Delete recipe", ->{self.delete_dish}
             selection.choice "Exit", ->{exit}
